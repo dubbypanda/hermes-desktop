@@ -64,6 +64,15 @@ export default function RepInteractionPanel({
   const [activeAction, setActiveAction] = useState<RepActionId | null>(null);
   const [state, setState] = useState<ActionState>({ kind: "idle" });
 
+  // The panel stays mounted while the Office selection changes (e.g. clicking
+  // an agent visiting the bank), so follow the outside selection instead of
+  // keeping the mount-time agent — otherwise actions would silently run for
+  // an agent the rest of the UI is no longer focused on. A cleared selection
+  // (null) keeps the panel's own picker choice.
+  useEffect(() => {
+    if (initialAgentId) setAgentId(initialAgentId);
+  }, [initialAgentId]);
+
   // Monotonic token identifying the latest action request. Wallet data must
   // never render under the wrong agent: an in-flight action for agent A is
   // invalidated the moment the picker moves to agent B (or a newer action

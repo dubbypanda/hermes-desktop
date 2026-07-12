@@ -34,3 +34,12 @@ Vitest suites covering the registry's shape and the backend wallet calls.
 
 - [[src/renderer/src/screens/Office/office3d/interactions/registry.test.ts]] — every rep has labels and ≥1 executable action, ids unique, bank teller registered with its bank actions
 - [[src/main/wallet-actions.test.ts]] — portfolio: signed-out short-circuit, token mapping, malformed-row defaults, backend error strings, network failure; provisioning: request body, 409 → exists, unlinked after failed auto-sync, HTTP error
+- [[src/renderer/src/screens/Office/RepInteractionPanel.test.tsx]] — the panel's agent-context guarantees, specced below
+
+### Panel follows the Office selection
+
+The panel stays mounted while the Office selection changes; its agent picker follows a new non-null selection and keeps its own choice when the selection clears, so actions never silently run for an agent the rest of the UI left.
+
+### Drops stale action results
+
+An action started for agent A whose response lands after the picker moved to agent B is discarded — B's context never shows A's wallets — while re-running the action for B renders B's data.
