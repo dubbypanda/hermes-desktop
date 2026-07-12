@@ -72,8 +72,20 @@ export async function resolveLinkedAgent(
     agentId = getLinkedAgentId(name);
   }
   if (!agentId) return { status: "unlinked" };
-  const owner = getLinkedAgentAccountId(name);
-  if (owner && owner !== account.user.id) return { status: "foreign" };
+
+  let owner = getLinkedAgentAccountId(name);
+  if (!owner) {
+    // Legacy link with no recorded owner. Run one sync pass: it stamps the
+    // current account onto links whose agent belongs to this account and
+    // leaves foreign/ambiguous ones untagged. Without this, a stale agent id
+    // from a previously signed-in account would be sent under the new
+    // account's token and surface as a generic error.
+    await syncAgents();
+    agentId = getLinkedAgentId(name);
+    if (!agentId) return { status: "unlinked" };
+    owner = getLinkedAgentAccountId(name);
+  }
+  if (owner !== account.user.id) return { status: "foreign" };
   return { status: "ok", apiUrl: account.apiUrl, token, agentId };
 }
 

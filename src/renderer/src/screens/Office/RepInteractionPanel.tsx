@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Landmark, X } from "lucide-react";
 import { useI18n } from "../../components/useI18n";
 import type {
@@ -64,8 +64,16 @@ export default function RepInteractionPanel({
   const [activeAction, setActiveAction] = useState<RepActionId | null>(null);
   const [state, setState] = useState<ActionState>({ kind: "idle" });
 
-  // A different agent context invalidates any shown result.
+  // Monotonic token identifying the latest action request. Wallet data must
+  // never render under the wrong agent: an in-flight action for agent A is
+  // invalidated the moment the picker moves to agent B (or a newer action
+  // starts), so its late result is dropped instead of applied.
+  const requestSeq = useRef(0);
+
+  // A different agent context invalidates any shown result — including
+  // results still in flight.
   useEffect(() => {
+    requestSeq.current += 1;
     setState({ kind: "idle" });
     setActiveAction(null);
   }, [agentId]);
@@ -86,6 +94,12 @@ export default function RepInteractionPanel({
   const runAction = useCallback(
     async (actionId: RepActionId): Promise<void> => {
       if (!agentId) return;
+      const request = ++requestSeq.current;
+      // Apply a result only if this is still the latest request for the
+      // currently selected agent.
+      const apply = (next: ActionState): void => {
+        if (requestSeq.current === request) setState(next);
+      };
       setActiveAction(actionId);
       setState({ kind: "loading" });
       try {
@@ -96,14 +110,14 @@ export default function RepInteractionPanel({
             res.status === "unlinked" ||
             res.status === "foreign"
           ) {
-            setState(hintForStatus(res.status));
+            apply(hintForStatus(res.status));
           } else if (res.status === "error") {
-            setState({
+            apply({
               kind: "error",
               message: res.error || t("office.repErrorGeneric"),
             });
           } else {
-            setState({ kind: "status", wallets: res.wallets });
+            apply({ kind: "status", wallets: res.wallets });
           }
           return;
         }
@@ -114,11 +128,11 @@ export default function RepInteractionPanel({
             res.status === "unlinked" ||
             res.status === "foreign"
           ) {
-            setState(hintForStatus(res.status));
+            apply(hintForStatus(res.status));
             return;
           }
           if (res.status === "error") {
-            setState({
+            apply({
               kind: "error",
               message: res.error || t("office.repErrorGeneric"),
             });
@@ -126,7 +140,7 @@ export default function RepInteractionPanel({
           }
           const wallet = res.wallets.find((w) => w.canTransact);
           if (!wallet) {
-            setState({
+            apply({
               kind: "hint",
               message: t("office.repBalanceNoTransactable"),
             });
@@ -137,7 +151,7 @@ export default function RepInteractionPanel({
             wallet.id,
           );
           if (portfolio.status !== "ok") {
-            setState(
+            apply(
               portfolio.status === "error"
                 ? {
                     kind: "error",
@@ -147,7 +161,7 @@ export default function RepInteractionPanel({
             );
             return;
           }
-          setState({
+          apply({
             kind: "balance",
             totalUsd: portfolio.totalUsd ?? 0,
             tokens: portfolio.tokens ?? [],
@@ -157,21 +171,21 @@ export default function RepInteractionPanel({
         if (actionId === "createAccount") {
           const res = await window.hermesAPI.provisionCloudWallet(agentId);
           if (res.status === "ok") {
-            setState({ kind: "created", address: res.wallet?.address });
+            apply({ kind: "created", address: res.wallet?.address });
           } else if (res.status === "exists") {
-            setState({ kind: "exists" });
+            apply({ kind: "exists" });
           } else if (res.status === "error") {
-            setState({
+            apply({
               kind: "error",
               message: res.error || t("office.repErrorGeneric"),
             });
           } else {
-            setState(hintForStatus(res.status));
+            apply(hintForStatus(res.status));
           }
           return;
         }
       } catch (err) {
-        setState({ kind: "error", message: (err as Error).message });
+        apply({ kind: "error", message: (err as Error).message });
       }
     },
     [agentId, hintForStatus, t],

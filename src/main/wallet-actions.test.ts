@@ -32,9 +32,9 @@ vi.mock("./hermes-account", () => ({
 
 vi.mock("./agent-sync", () => ({
   getLinkedAgentId: () => mockState.linkedAgentId,
-  // Link owner recorded in sync state; null = legacy/untagged (allowed —
-  // the backend still enforces ownership server-side).
-  getLinkedAgentAccountId: () => null,
+  // Link owner recorded in sync state — matches the mock account ("u1") so
+  // actions proceed; the legacy/foreign paths are covered in wallet-sync tests.
+  getLinkedAgentAccountId: () => "u1",
   syncAgents: vi.fn(async () => {
     mockState.syncAgentsCalls++;
     mockState.linkedAgentId = mockState.linkAfterSync;
