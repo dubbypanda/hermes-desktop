@@ -20,7 +20,17 @@ const SUPPORTED_PROVIDER_IDS = new Set(PROVIDERS.options.map((p) => p.value));
 interface LibModel {
   provider: string;
   model: string;
+  baseUrl: string;
 }
+
+// Normalize a base URL for equality (trailing slash irrelevant).
+const normUrl = (u: string): string => (u || "").trim().replace(/\/+$/, "");
+
+// Identity key for a registry attachment: provider + endpoint + model id. Base
+// URL is part of the key because `addModel` dedups on it, so the *same* model id
+// exposed by two different custom endpoints is two distinct entries.
+const pickedKey = (provider: string, baseUrl: string, model: string): string =>
+  `${provider}|${normUrl(baseUrl)}|${model}`;
 
 // The curated-registry browser (models.json from hermes-registry). Lets the user
 // pick community-curated models into the local library. Relocated out of the
@@ -85,7 +95,9 @@ function RegistryBrowserModal({
       modalities: model.modalities,
     });
     await window.hermesAPI.addModel(name, provider, model.name, baseUrl);
-    setPicked((prev) => new Set(prev).add(model.name));
+    setPicked((prev) =>
+      new Set(prev).add(pickedKey(provider, baseUrl, model.name)),
+    );
     await loadModels();
     onModelAdded?.();
     toast.success(t("models.registryAdded", { name }));
@@ -162,12 +174,21 @@ function RegistryBrowserModal({
                   </div>
                   <div className="registry-model-list">
                     {matched.map((model) => {
+                      const provider = supported ? prov.id : "custom";
+                      const baseUrl = supported
+                        ? ""
+                        : (prov.apiBase || "").trim();
+                      // A custom model is "added" only when the same id exists at
+                      // the *same* endpoint; a different custom endpoint is a new
+                      // entry (matching addModel's provider+model+baseUrl dedup).
                       const exists =
-                        picked.has(model.name) ||
+                        picked.has(pickedKey(provider, baseUrl, model.name)) ||
                         models.some(
                           (sm) =>
                             sm.model === model.name &&
-                            sm.provider === (supported ? prov.id : "custom"),
+                            sm.provider === provider &&
+                            (supported ||
+                              normUrl(sm.baseUrl) === normUrl(baseUrl)),
                         );
                       return (
                         <div key={model.name} className="registry-model-row">
