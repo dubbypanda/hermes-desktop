@@ -24,9 +24,7 @@ vi.mock("./remote-oauth", () => ({ requestRemoteOAuthJson }));
 import { remoteDashboardRequestJson } from "./remote-api";
 import type { ConnectionConfig } from "./config";
 
-function remoteConnection(
-  remoteAuthMode: "token" | "oauth",
-): ConnectionConfig {
+function remoteConnection(remoteAuthMode: "token" | "oauth"): ConnectionConfig {
   return {
     mode: "remote",
     remoteUrl: "https://remote.example:9119",
@@ -109,7 +107,10 @@ describe("remote dashboard API client", () => {
   });
 
   it("rejects non-Remote connections instead of touching local state", async () => {
-    const local = { ...remoteConnection("token"), mode: "local" } as ConnectionConfig;
+    const local = {
+      ...remoteConnection("token"),
+      mode: "local",
+    } as ConnectionConfig;
     await expect(
       remoteDashboardRequestJson(local, "/api/status"),
     ).rejects.toThrow("direct Remote mode");

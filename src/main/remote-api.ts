@@ -26,7 +26,9 @@ export function remoteDashboardRequestJson<T>(
 ): Promise<T> {
   if (connection.mode !== "remote") {
     return Promise.reject(
-      new Error("Remote dashboard API is available only in direct Remote mode."),
+      new Error(
+        "Remote dashboard API is available only in direct Remote mode.",
+      ),
     );
   }
 
