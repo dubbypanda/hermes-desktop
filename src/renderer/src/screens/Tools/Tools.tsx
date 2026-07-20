@@ -358,10 +358,6 @@ function Tools({
     };
   }, []);
   const [mcpSearch, setMcpSearch] = useState("");
-  // Per-server test result → enriches the Status column (connected · N / error).
-  const [mcpStatus, setMcpStatus] = useState<
-    Record<string, { ok: boolean; tools?: number; error?: string }>
-  >({});
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -574,14 +570,6 @@ function Tools({
     setMcpMessage("");
     try {
       const result = await window.hermesAPI.testMcpServer(name, profile);
-      setMcpStatus((prev) => ({
-        ...prev,
-        [name]: {
-          ok: result.success,
-          tools: result.tools?.length,
-          error: result.error,
-        },
-      }));
       if (!result.success) {
         setMcpError(result.error || t("tools.mcpTestFailed"));
         return;
@@ -590,10 +578,6 @@ function Tools({
         t("tools.mcpTestPassed", { count: result.tools?.length || 0 }),
       );
     } catch (err) {
-      setMcpStatus((prev) => ({
-        ...prev,
-        [name]: { ok: false, error: (err as Error).message },
-      }));
       setMcpError((err as Error).message || t("tools.mcpTestFailed"));
     } finally {
       setMcpBusy("");
@@ -775,13 +759,11 @@ function Tools({
                     <span>{t("tools.mcpColServer")}</span>
                     <span>{t("tools.mcpColTransport")}</span>
                     <span>{t("tools.mcpColCommand")}</span>
-                    <span>{t("tools.mcpColStatus")}</span>
                     <span className="mcp-th-enabled">
                       {t("tools.mcpColEnabled")}
                     </span>
                   </div>
                   {filteredMcpServers.map((s) => {
-                    const st = mcpStatus[s.name];
                     const cmd =
                       s.type === "http"
                         ? s.url || ""
@@ -815,34 +797,6 @@ function Tools({
                           <span className="mcp-cmd">
                             {cmd || t("tools.mcpNoDetail")}
                           </span>
-                        </div>
-                        <div className="mcp-cell mcp-cell-status">
-                          {st ? (
-                            st.ok ? (
-                              <span className="mcp-status is-ok">
-                                <span className="mcp-dot" />
-                                {t("tools.mcpStatusConnected")} ·{" "}
-                                {st.tools ?? 0}
-                              </span>
-                            ) : (
-                              <span
-                                className="mcp-status is-err"
-                                title={st.error}
-                              >
-                                <span className="mcp-dot" />
-                                {t("tools.mcpStatusError")}
-                              </span>
-                            )
-                          ) : (
-                            <span
-                              className={`mcp-status ${s.enabled ? "is-on" : "is-off"}`}
-                            >
-                              <span className="mcp-dot" />
-                              {s.enabled
-                                ? t("tools.mcpStatusEnabled")
-                                : t("tools.disabled")}
-                            </span>
-                          )}
                         </div>
                         <div className="mcp-cell mcp-cell-controls">
                           <div className="mcp-row-actions">

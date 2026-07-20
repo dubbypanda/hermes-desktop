@@ -6,12 +6,12 @@ Add, edit, remove, enable, and test Model Context Protocol (MCP) servers from th
 
 The MCP tab in [[src/renderer/src/screens/Tools/Tools.tsx]] lists servers as a table and drives every mutation through IPC into [[src/main/mcp-servers.ts]]; local mode edits `config.yaml` directly, Remote/SSH mode proxies to the gateway's `/api/mcp/servers` REST endpoints.
 
-The columns are Server · Transport · Command/URL · Status · Enabled.
+The columns are Server · Transport · Command/URL · Enabled.
 
 - **Add** — [[src/main/mcp-servers.ts#addMcpServer]] validates the input and rejects a duplicate name.
 - **Edit** — a per-row pencil opens the shared modal pre-filled with the server's values; saving calls [[src/main/mcp-servers.ts#updateMcpServer]], which upserts the entry **in place** (no delete-then-add gap so a mid-write failure can't lose the server) and only removes the old entry when the name changed — guarding first against colliding with another server. The modal has **Visual** and **JSON** modes (a toggle): Visual is the field form; JSON is a raw `Server JSON` editor (`command`/`args`/`env`/`url`/`auth`/`enabled`). The two stay in sync on toggle; on save the active mode is the source of truth (JSON is parsed + validated inline, and an `enabled` change there is applied via `setMcpServerEnabled` after the config write). Name stays a separate field in both modes.
 - **Remove** — [[src/main/mcp-servers.ts#removeMcpServer]].
-- **Enable/disable** and **Test** are separate IPC calls; the enable toggle is the row's trailing control, and the edit/test/remove actions reveal on row hover. The Status column shows enabled/disabled from config by default and upgrades to `connected · <tool count>` or `error` once the user runs Test (result cached per server, since `listMcpServers` carries no live connection state or tool count).
+- **Enable/disable** and **Test** are separate IPC calls; the enable toggle is the row's trailing control (with the row dimming when off — the two together stand in for a status column, so there isn't one), and the edit/test/remove actions reveal on row hover. Test surfaces its result (`connected · <tool count>` or an error) as the transient banner above the table, since `listMcpServers` carries no live connection state or tool count.
 
 The add and edit flows share one modal: `editingMcpName` in `Tools.tsx` (null while adding) selects `updateMcpServer` vs `addMcpServer` and swaps the title and save-button copy. Server rows are re-fetched after every successful mutation.
 
