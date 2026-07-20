@@ -2662,7 +2662,7 @@ body:has(.shell-vibrant),
   display: flex;
   flex-direction: column;
   padding: 8px;
-  background: color-mix(in srgb, var(--bg-secondary) 92%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 0.5px solid var(--border);
@@ -3911,7 +3911,7 @@ body:has(.shell-vibrant),
   width: 244px;
   padding: 12px 14px;
   /* Same floating glass material as the pickers. */
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(28px) saturate(1.5);
   -webkit-backdrop-filter: blur(28px) saturate(1.5);
   border: 0.5px solid var(--border);
@@ -6417,7 +6417,7 @@ body:has(.shell-vibrant),
   overflow-x: hidden;
   /* Translucent glass: the chat behind blurs through, reading as a floating
      material rather than a flat web panel. */
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(28px) saturate(1.5);
   -webkit-backdrop-filter: blur(28px) saturate(1.5);
   /* Depth comes from light, not strokes: one soft ambient shadow lifts the
@@ -6474,7 +6474,7 @@ body:has(.shell-vibrant),
   inset-inline-start: 0;
   margin-bottom: 8px;
   width: 280px;
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(28px) saturate(1.5);
   -webkit-backdrop-filter: blur(28px) saturate(1.5);
   border: 0.5px solid var(--border);
@@ -8721,7 +8721,7 @@ body:has(.shell-vibrant),
 .gateway-modal {
   display: flex;
   flex-direction: column;
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 0.5px solid var(--border);
@@ -9494,7 +9494,7 @@ body:has(.shell-vibrant),
   max-height: 820px;
   /* Frosted glass — same material language as the pickers: translucent tint +
      blur, lifted on a soft ambient shadow instead of a hard border. */
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 0.5px solid var(--border);
@@ -9915,7 +9915,7 @@ body:has(.shell-vibrant),
   max-width: 1000px;
   max-height: 780px;
   /* Frosted glass — same material as the pickers/profile modal. */
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 0.5px solid var(--border);
@@ -14312,7 +14312,7 @@ body:has(.shell-vibrant),
 
 .models-modal {
   /* Frosted glass — same material as the profile/settings modals. */
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 0.5px solid var(--border);
@@ -15933,7 +15933,7 @@ body:has(.shell-vibrant),
 .follow-us-modal,
 .discover-modal,
 .schedules-modal {
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-secondary) 97%, transparent);
   backdrop-filter: blur(30px) saturate(1.5);
   -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border: 0.5px solid var(--border);

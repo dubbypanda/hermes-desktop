@@ -14,6 +14,12 @@ The sidebar is frosted glass on macOS — the window material shows through it �
 
 For the material to paint, the renderer leaves surfaces transparent: [[src/renderer/src/App.tsx]] adds `shell-vibrant` to `.app` only on macOS and only on the `main` screen (onboarding stays solid). Under it, `body`/`#root`/`.app` go transparent, the `.sidebar` and `.status-bar` become a translucent `--bg-secondary` tint, and `.content` keeps an opaque `--bg-primary`. Because a transparent window is no longer masked to its rounded shape by macOS, `.content` also rounds its own top-right corner (`0 16px 0 0`) — the sidebar owns top-left, the status bar owns the bottom two — so the opaque panes don't show square corners.
 
+## Modal & popover glass is near-opaque (compositing-independent)
+
+Modals and pickers use a `--bg-secondary` tint plus `backdrop-filter: blur(30px) saturate(1.5)`, but the tint is **97% opaque** so legibility never depends on the blur actually painting.
+
+The blur is treated as pure enhancement, not a load-bearing layer. On the transparent vibrancy window above, `backdrop-filter` is unreliable in packaged macOS builds — it silently drops to a no-op even with hardware acceleration on — which left the earlier 85%-opaque panels showing sharp app content bleeding through (the "transparent modal" bug). Raising the tint to 97% in `main.css` makes every shared frosted surface — the settings/profile/models/schedules/gateway/profile-switch modals and the model/reasoning/fast-mode dropdowns — render near-identically for all users regardless of GPU or build type; where the blur *does* paint it adds a faint frost, but its absence is barely perceptible. Keep new glass surfaces at this opacity, not the old 85%, for the same reason.
+
 ## Bottom status strip
 
 A native system strip pinned full-width beneath the sidebar+content row surfaces live state that was otherwise hidden: gateway/connection, active model, and skill count, plus real keyboard hints.
