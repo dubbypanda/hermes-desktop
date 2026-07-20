@@ -71,23 +71,37 @@ export function startMainProcess(): void {
     });
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-      callback({
-        responseHeaders: {
-          ...details.responseHeaders,
-          "Content-Security-Policy": [
-            "default-src 'self'; " +
-              "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; " +
-              "style-src 'self' 'unsafe-inline'; " +
-              "img-src 'self' data: blob: file: https:; " +
-              "media-src 'self' data: blob: file: https:; " +
-              "connect-src 'self' blob: http://127.0.0.1:* ws://127.0.0.1:* http://localhost:* ws://localhost:* https: wss:; " +
-              "font-src 'self' data:; " +
-              "frame-src 'self' https: http://127.0.0.1:* http://localhost:*; " +
-              "object-src 'none'; " +
-              "base-uri 'self';",
-          ],
-        },
-      });
+      const responseHeaders: Record<string, string[]> = {
+        ...details.responseHeaders,
+        "Content-Security-Policy": [
+          "default-src 'self'; " +
+            "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; " +
+            "style-src 'self' 'unsafe-inline'; " +
+            "img-src 'self' data: blob: file: https:; " +
+            "media-src 'self' data: blob: file: https:; " +
+            "connect-src 'self' blob: http://127.0.0.1:* ws://127.0.0.1:* http://localhost:* ws://localhost:* https: wss:; " +
+            "font-src 'self' data:; " +
+            "frame-src 'self' https: http://127.0.0.1:* http://localhost:*; " +
+            "object-src 'none'; " +
+            "base-uri 'self';",
+        ],
+      };
+      // Registry MCP icons are immutable, content-addressed SVGs. Rewrite their
+      // Cache-Control to a year (immutable ⇒ no revalidation) so each is fetched
+      // at most once and served from the on-disk HTTP cache thereafter.
+      if (
+        details.url.startsWith("https://registry.hermesone.org/registry-icon/")
+      ) {
+        for (const key of Object.keys(responseHeaders)) {
+          if (key.toLowerCase() === "cache-control") {
+            delete responseHeaders[key];
+          }
+        }
+        responseHeaders["Cache-Control"] = [
+          "public, max-age=31536000, immutable",
+        ];
+      }
+      callback({ responseHeaders });
     });
 
     createWindow();

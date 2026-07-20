@@ -1559,6 +1559,20 @@ const hermesAPI = {
     profile?: string,
   ): Promise<{ success: boolean; error?: string }> =>
     ipcRenderer.invoke("add-mcp-server", input, profile),
+  updateMcpServer: (
+    originalName: string,
+    input: {
+      name: string;
+      type: "http" | "stdio";
+      url?: string;
+      command?: string;
+      args?: string[];
+      env?: Record<string, string>;
+      auth?: string;
+    },
+    profile?: string,
+  ): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke("update-mcp-server", originalName, input, profile),
   removeMcpServer: (
     name: string,
     profile?: string,

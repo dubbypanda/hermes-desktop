@@ -79,6 +79,7 @@ import {
 } from "../hermes-agent-compat";
 import {
   addMcpServer,
+  updateMcpServer,
   installMcpCatalogEntry,
   listMcpCatalog,
   listMcpServers,
@@ -2900,6 +2901,11 @@ export function registerIpcHandlers(context: IpcContext): void {
     "add-mcp-server",
     (_event, input: McpServerInput, profile?: string) =>
       addMcpServer(input, profile),
+  );
+  ipcMain.handle(
+    "update-mcp-server",
+    (_event, originalName: string, input: McpServerInput, profile?: string) =>
+      updateMcpServer(originalName, input, profile),
   );
   ipcMain.handle(
     "remove-mcp-server",

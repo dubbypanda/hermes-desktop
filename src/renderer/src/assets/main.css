@@ -13368,7 +13368,7 @@ body:has(.shell-vibrant),
 
 .tools-tab:hover {
   color: var(--text-secondary);
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
 }
 
 .tools-tab.active {
@@ -13385,7 +13385,7 @@ body:has(.shell-vibrant),
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
-  background: var(--bg-tertiary);
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
   border-radius: 10px;
   padding: 1px 7px;
 }
@@ -13403,14 +13403,18 @@ body:has(.shell-vibrant),
   flex: 1;
   max-width: 360px;
   padding: 0 10px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   color: var(--text-muted);
+  transition:
+    box-shadow var(--transition),
+    border-color var(--transition);
 }
 
 .tools-mcp-search:focus-within {
-  border-color: var(--border-focus);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
 .tools-mcp-search-input {
@@ -13458,21 +13462,25 @@ body:has(.shell-vibrant),
   display: flex;
   flex-direction: column;
   padding: 16px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  /* Light-based: lifted translucent panel, no stroke. */
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+  border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition);
   -webkit-user-select: none;
   user-select: none;
 }
 
 .tools-card:hover {
-  background: var(--bg-tertiary);
+  background: color-mix(in srgb, var(--text-primary) 9%, transparent);
 }
 
 .tools-card-enabled {
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+.tools-card-enabled:hover {
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
 }
 
 .tools-card-disabled {
@@ -13497,7 +13505,7 @@ body:has(.shell-vibrant),
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  background: var(--bg-elevated);
+  background: color-mix(in srgb, var(--text-primary) 9%, transparent);
   padding: 7px;
   color: var(--text-secondary);
   flex-shrink: 0;
@@ -13513,6 +13521,212 @@ body:has(.shell-vibrant),
   height: 100%;
 }
 
+/* MCP server logo — a plain <img> on a white tile in both themes (matching the
+   registry web UI), so single-colour black glyphs and colour logos both read. */
+.mcp-logo-tile {
+  background: #fff;
+  padding: 5px;
+}
+.mcp-logo-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ── MCP servers table (Server · Transport · Command/URL · Status · Enabled) ── */
+.mcp-table {
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
+  overflow: hidden;
+}
+.mcp-thead,
+.mcp-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 84px minmax(0, 2.2fr) 150px 168px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+}
+.mcp-thead {
+  height: 40px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+.mcp-th-enabled {
+  text-align: right;
+}
+.mcp-row {
+  min-height: 56px;
+  transition: background var(--transition);
+}
+.mcp-row + .mcp-row {
+  border-top: 1px solid var(--border);
+}
+.mcp-row:hover {
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+.mcp-row-off {
+  opacity: 0.5;
+}
+.mcp-cell {
+  min-width: 0;
+}
+.mcp-cell-server {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mcp-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mcp-transport {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+}
+.mcp-transport.is-http {
+  color: var(--accent-text, var(--accent));
+  background: color-mix(in srgb, var(--accent, #4c8dff) 16%, transparent);
+}
+.mcp-cmd {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mcp-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.mcp-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+.mcp-status.is-on,
+.mcp-status.is-ok {
+  color: var(--success);
+}
+.mcp-status.is-on .mcp-dot,
+.mcp-status.is-ok .mcp-dot {
+  background: var(--success);
+}
+.mcp-status.is-err {
+  color: var(--warning, #f59e0b);
+}
+.mcp-status.is-err .mcp-dot {
+  background: var(--warning, #f59e0b);
+}
+.mcp-cell-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.mcp-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.mcp-row:hover .mcp-row-actions,
+.mcp-row:focus-within .mcp-row-actions {
+  opacity: 1;
+}
+/* Plain muted icons in the row (not lifted buttons), per the clean mockup. */
+.mcp-row-actions .tools-icon-btn {
+  width: 26px;
+  height: 26px;
+  background: none;
+  color: var(--text-muted);
+}
+.mcp-row-actions .tools-icon-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--text-primary) 10%, transparent);
+}
+.mcp-tfoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+.mcp-tfoot-hint {
+  opacity: 0.75;
+}
+
+/* Visual | JSON editor toggle in the MCP modal. */
+.mcp-mode-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  margin-bottom: 14px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, #000 18%, transparent);
+}
+.mcp-mode-btn {
+  padding: 5px 14px;
+  border: none;
+  background: none;
+  border-radius: calc(var(--radius-sm) - 1px);
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+.mcp-mode-btn:hover {
+  color: var(--text-primary);
+}
+.mcp-mode-btn.active {
+  background: color-mix(in srgb, var(--text-primary) 12%, transparent);
+  color: var(--text-primary);
+}
+.mcp-json-input {
+  min-height: 240px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  resize: vertical;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: auto;
+}
+.mcp-json-error {
+  color: var(--error);
+}
+
 .tools-card-label {
   font-size: 14px;
   font-weight: 600;
@@ -13524,6 +13738,55 @@ body:has(.shell-vibrant),
   font-size: 12px;
   color: var(--text-muted);
   line-height: 1.4;
+}
+
+/* Tools tab — a 2-column grouped grid of horizontal toggle rows (icon + name/
+   description + switch), separated by hairlines, on one lifted panel. */
+.tools-toolset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.tools-toolset-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.tools-toolset-row:hover {
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
+}
+/* Row dividers on every row after the first (count-robust for odd/even). */
+.tools-toolset-row:nth-child(n + 3) {
+  border-top: 1px solid var(--border);
+}
+/* Column divider down the middle (left cells are the odd children). */
+.tools-toolset-row:nth-child(odd) {
+  border-right: 1px solid var(--border);
+}
+.tools-toolset-info {
+  flex: 1;
+  min-width: 0;
+}
+.tools-toolset-info .tools-card-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .tools-toolset-grid {
+    grid-template-columns: 1fr;
+  }
+  .tools-toolset-row:nth-child(odd) {
+    border-right: none;
+  }
+  .tools-toolset-row:nth-child(2) {
+    border-top: 1px solid var(--border);
+  }
 }
 
 /* Toggle switch */
@@ -13545,8 +13808,8 @@ body:has(.shell-vibrant),
   display: block;
   width: 40px;
   height: 22px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-bright);
+  background: color-mix(in srgb, var(--text-primary) 16%, transparent);
+  border: none;
   border-radius: 11px;
   transition: all var(--transition);
   position: relative;
@@ -13617,9 +13880,9 @@ body:has(.shell-vibrant),
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-sm);
-  background: var(--bg-elevated);
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition);
@@ -13627,7 +13890,7 @@ body:has(.shell-vibrant),
 
 .tools-icon-btn:hover:not(:disabled) {
   color: var(--text-primary);
-  border-color: var(--border-bright);
+  background: color-mix(in srgb, var(--text-primary) 13%, transparent);
 }
 
 .tools-icon-btn:disabled {
@@ -13637,7 +13900,7 @@ body:has(.shell-vibrant),
 
 .tools-icon-btn-danger:hover:not(:disabled) {
   color: var(--error);
-  border-color: color-mix(in srgb, var(--error) 45%, transparent);
+  background: color-mix(in srgb, var(--error) 14%, transparent);
 }
 
 .tools-icon-btn svg {
@@ -13660,14 +13923,12 @@ body:has(.shell-vibrant),
 
 .tools-error {
   color: var(--error);
-  background: var(--error-bg);
-  border: 1px solid color-mix(in srgb, var(--error) 45%, transparent);
+  background: color-mix(in srgb, var(--error) 14%, transparent);
 }
 
 .tools-success {
   color: var(--success);
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
+  background: color-mix(in srgb, var(--success) 14%, transparent);
 }
 
 .tools-empty {
@@ -13675,8 +13936,7 @@ body:has(.shell-vibrant),
   gap: 12px;
   align-items: center;
   padding: 16px;
-  background: var(--bg-secondary);
-  border: 1px dashed var(--border-bright);
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
   border-radius: var(--radius-md);
 }
 
@@ -13693,14 +13953,14 @@ body:has(.shell-vibrant),
   border-radius: 999px;
   font-size: 11px;
   line-height: 1;
-  background: var(--bg-elevated);
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
   color: var(--text-secondary);
   margin-right: 6px;
 }
 
 .tools-mcp-disabled {
   color: var(--error);
-  background: var(--error-bg);
+  background: color-mix(in srgb, var(--error) 14%, transparent);
 }
 
 .tools-mcp-detail {
