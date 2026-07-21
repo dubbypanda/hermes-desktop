@@ -8,7 +8,7 @@ import {
   Refresh,
   Settings,
   Signal,
-  Sparkles,
+  Drama,
   Trash,
   User,
   Wallet,
@@ -70,7 +70,7 @@ const PROFILE_SECTIONS: ReadonlyArray<{
   Icon: React.ComponentType<{ size?: number }>;
 }> = [
   { id: "profile", labelKey: "agents.sectionProfile", Icon: User },
-  { id: "persona", labelKey: "agents.sectionPersona", Icon: Sparkles },
+  { id: "persona", labelKey: "agents.sectionPersona", Icon: Drama },
   { id: "agentMemory", labelKey: "agents.sectionAgentMemory", Icon: Database },
   { id: "wallet", labelKey: "agents.sectionWallet", Icon: Wallet },
   { id: "sync", labelKey: "agents.sectionSync", Icon: Refresh },
